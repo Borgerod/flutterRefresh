@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_refresh_app/models/user.dart';
-import 'package:flutter_refresh_app/widgets/create_user.dart';
+import 'package:flutter_refresh_app/widgets/create_user_button.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:phone_form_field/phone_form_field.dart';
 

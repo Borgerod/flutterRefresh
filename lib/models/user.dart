@@ -24,7 +24,7 @@ class UserData {
     'firstName': firstName,
     'middleName': middleName,
     'lastName': lastName,
-    'birthdate': birthdate.toIso8601String(), // convert DateTime to String
+    'birthdate': birthdate.toIso8601String(),
   };
 
   factory UserData.fromMap(Map<String, dynamic> map) => UserData(
@@ -34,8 +34,6 @@ class UserData {
     firstName: map['firstName'],
     middleName: map['middleName'],
     lastName: map['lastName'],
-    birthdate: DateTime.parse(
-      map['birthdate'],
-    ), // parse String back to DateTime
+    birthdate: DateTime.parse(map['birthdate']),
   );
 }

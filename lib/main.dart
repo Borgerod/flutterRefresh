@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [Locale('nb', 'NO')],
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreenAccent),
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
