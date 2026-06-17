@@ -123,8 +123,10 @@ class _UserFormState extends State<UserForm> {
               ),
               child: InputDatePickerFormField(
                 fieldLabelText: 'Birthdate',
+                initialDate: _birthdate,
                 firstDate: DateTime(1900, 1, 1),
                 lastDate: DateTime.now(),
+
                 onDateSubmitted: (d) => setState(() => _birthdate = d),
               ),
             ),
