@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter_refresh_app/widgets/user_table.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 import 'package:flutter_refresh_app/models/user.dart';
 import 'package:flutter_refresh_app/widgets/user_creation_form.dart';
@@ -40,7 +41,6 @@ class MyApp extends StatelessWidget {
 // TODO: datatable - add search
 // TODO: datatable - add filters
 // TODO: user creation - add user ID generator
-// TODO: user creation - add duplication checker
 // TODO: datatable - add a resolve button -> if two api requests collides when creating new user => two identical users.
 
 class MyHomePage extends StatefulWidget {
@@ -57,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 // TEST AREA end
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  bool _isVisible_NewUserReadMore = false;
   UserData? profile;
 
   void _incrementCounter() {
@@ -151,8 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: const TextStyle(
                           fontStyle: FontStyle.italic,
                           fontSize: 24,
-                          // fontSize: 16,
-                          // color: CupertinoColors.inactiveGray,
                         ),
                         child: Wrap(
                           spacing: 5,
@@ -163,27 +162,49 @@ class _MyHomePageState extends State<MyHomePage> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: DefaultTextStyle.merge(
-                          style: const TextStyle(
-                            // fontSize: 16,
-                            color: CupertinoColors.inactiveGray,
-                          ),
-                          child: Wrap(
-                            spacing: 5,
-                            children: [
-                              const SizedBox(width: 16),
-                              Text("${profile!.userName},"),
-                              Text("${profile!.email},"),
-                              Text("${profile!.phone},"),
-                              Text("${profile!.firstName},"),
-                              Text("${profile!.middleName},"),
-                              Text("${profile!.lastName},"),
-                              Text(
-                                "${MaterialLocalizations.of(context).formatCompactDate(profile!.birthdate)}.",
-                              ),
-                            ],
+
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(
+                          minWidth: 24,
+                          minHeight: 24,
+                        ),
+                        iconSize: 18,
+                        onPressed: () {
+                          setState(() {
+                            _isVisible_NewUserReadMore =
+                                !_isVisible_NewUserReadMore;
+                          });
+                        },
+                        icon: _isVisible_NewUserReadMore
+                            ? Icon(CupertinoIcons.chevron_back)
+                            : Icon(CupertinoIcons.chevron_forward),
+                      ),
+
+                      Visibility(
+                        visible: _isVisible_NewUserReadMore,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: DefaultTextStyle.merge(
+                            style: const TextStyle(
+                              // fontSize: 16,
+                              color: CupertinoColors.inactiveGray,
+                            ),
+                            child: Wrap(
+                              spacing: 5,
+                              children: [
+                                const SizedBox(width: 16),
+                                Text("${profile!.userName},"),
+                                Text("${profile!.email},"),
+                                Text("${profile!.phone},"),
+                                Text("${profile!.firstName},"),
+                                Text("${profile!.middleName},"),
+                                Text("${profile!.lastName},"),
+                                Text(
+                                  "${MaterialLocalizations.of(context).formatCompactDate(profile!.birthdate)}.",
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -195,101 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Align(
                 widthFactor: 10,
                 alignment: Alignment.centerLeft,
-                child: Card(
-                  margin: EdgeInsetsGeometry.all(25),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          // mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                          // crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'All Users:',
-                              style: const TextStyle(fontSize: 24),
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                setState(() {
-                                  deleteAll();
-                                });
-                              },
-                              child: Text("Clear All"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        FutureBuilder<List<UserData>>(
-                          future: readUsers(),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const CircularProgressIndicator();
-                            }
-                            final users = snapshot.data!;
-                            return DataTable(
-                              sortAscending: true, //TODO implement
-                              sortColumnIndex: 1, //TODO implement
-                              border: TableBorder.symmetric(
-                                inside: const BorderSide(
-                                  color: CupertinoColors.lightBackgroundGray,
-                                  width: 1,
-                                ),
-                                outside: BorderSide.none,
-                              ),
-                              columns: <DataColumn>[
-                                for (final key in UserData.fieldNames)
-                                  if (key != 'middleName')
-                                    DataColumn(
-                                      label: Text(
-                                        key,
-                                        style: const TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                        ),
-                                      ),
-                                    ),
-                              ],
-
-                              rows: [
-                                for (final user in users as List)
-                                  DataRow(
-                                    cells: [
-                                      for (final u in user.toMap().entries)
-                                        if (u.key != 'middleName')
-                                          DataCell(
-                                            Text(
-                                              u.key == 'birthdate'
-                                                  ? MaterialLocalizations.of(
-                                                      context,
-                                                    ).formatCompactDate(
-                                                      DateTime.parse(
-                                                        u.value as String,
-                                                      ),
-                                                    )
-                                                  : u.key == 'phone'
-                                                  ? formatPhone(
-                                                      u.value as String,
-                                                    )
-                                                  : u.key == 'birthdate'
-                                                  ? '${user.middleName ?? ''} ${u.value}'
-                                                        .trim()
-                                                  : u.value.toString(),
-                                            ),
-                                          ),
-                                    ],
-                                  ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                child: UserTable(),
               ),
             ],
           ),
