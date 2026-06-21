@@ -39,6 +39,8 @@ dependencies:
   email_validator: ^3.0.0
   phone_form_field: 10.0.17
   shared_preferences: ^2.5.5
+  flutter_libphonenumber: ^2.8.3
+  phone_numbers_parser: ^9.0.23
 dev_dependencies:
   flutter_test:
     sdk: flutter

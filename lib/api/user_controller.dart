@@ -57,3 +57,9 @@ Future<void> deleteUser(String userName) async {
     jsonEncode(users.map((u) => u.toMap()).toList()),
   );
 }
+
+// DELETE (all)
+Future<void> deleteAll() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  await preferences.clear();
+}

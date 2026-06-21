@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_refresh_app/api/user_controller.dart';
 import 'package:flutter_refresh_app/models/user.dart';
 import 'package:flutter_refresh_app/widgets/create_user_button.dart';
 import 'package:email_validator/email_validator.dart';
@@ -164,13 +165,53 @@ class _UserFormState extends State<UserForm> {
           ),
 
           const SizedBox(height: 12),
+
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: CreatUserButton(
               profile: _readFormValues(),
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  widget.onSubmit(_readFormValues());
+                  final newProfile = _readFormValues();
+                  final List<UserData> users = await readUsers();
+                  final usernameTaken = users.any(
+                    (u) => u.userName == newProfile.userName,
+                  );
+                  final emailTaken = users.any(
+                    (u) => u.email == newProfile.email,
+                  );
+                  final phoneTaken = users.any(
+                    (u) => u.phone == newProfile.phone,
+                  );
+
+                  if (usernameTaken || emailTaken || phoneTaken) {
+                    final messages = <String>[
+                      if (usernameTaken) 'Username already in use',
+                      if (emailTaken) 'Email already in use',
+                      if (phoneTaken) 'Phone number already in use',
+                    ];
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(messages.join('\n'))),
+                    );
+                    return;
+                  }
+                  widget.onSubmit(newProfile);
+
+                  // if (users.userName.contains(newProfile.userName)) {
+                  //   //   Error("User already exist in database")
+                  // } else {
+                  //   if (users.email.contains(newProfile.email)) {
+                  //     //   Error("User already exist in database")
+                  //   } else {
+                  //     if (users.phone.contains(newProfile.phone)) {
+                  //       //   Error("User already exist in database")
+                  //     } else {
+                  //       // TODO specify which fields to check, phone email username
+                  //       widget.onSubmit(_readFormValues());
+                  //     }
+                  //   }
+                  // }
                 }
               },
             ),

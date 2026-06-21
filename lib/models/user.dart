@@ -17,6 +17,15 @@ class UserData {
     required this.birthdate,
   });
 
+  static const List<String> fieldNames = [
+    'userName',
+    'email',
+    'phone',
+    'firstName',
+    'middleName',
+    'lastName',
+    'birthdate',
+  ];
   Map<String, dynamic> toMap() => {
     'userName': userName,
     'email': email,
